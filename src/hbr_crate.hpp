@@ -13,6 +13,7 @@
     #define HBRC_EXIT_CODE_SUCCESS 0
     #define HBRC_EXIT_CODE_BADMODE 1 // invalid mode specified to a command handler
     #define HBRC_EXIT_CODE_BADARGS 2 // insufficient or invalid arguments provided to harbor_arguments handler
+    #define HBRC_EXIT_CODE_UNKNOWN 99 // an unknown or generic error occured, no further information.
 
     /**
      * @brief Process harbor commands in the form of a vector of arguments 
