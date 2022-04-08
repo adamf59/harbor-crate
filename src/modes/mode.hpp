@@ -4,6 +4,7 @@
     #include <vector>
     #include <string>
 
+    typedef std::pair<std::string, std::string> strstr_arg_pair;
 
     class Mode {
 
@@ -14,6 +15,14 @@
              * @return int 
              */
             int process(std::vector<std::string> args);
+        protected:
+            /**
+             * @brief parse a string with the format "X=Y" into a pair with first=X, second=Y
+             * 
+             * @param arg argument string to parse
+             * @return std::pair<std::string, std::string> 
+             */
+            strstr_arg_pair parse_as_arg_pair(std::string arg);
 
     };
 
