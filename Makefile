@@ -17,7 +17,7 @@ all: harbor_crate
 # -------------
 
 # application executable (harbor-crate)
-HARBOR_CRATE_O_LINKS = $(BUILD_DIR)/pretty_print.o $(BUILD_DIR)/create_mode.o
+HARBOR_CRATE_O_LINKS = $(BUILD_DIR)/pretty_print.o $(BUILD_DIR)/create_mode.o $(BUILD_DIR)/mode.o
 harbor_crate: pretty_print.o create_mode.o
 	$(CC) $(CCFLAGS) $(SOURCE_DIR)/hbr_crate.cpp -o $(BUILD_DIR)/harbor-crate $(HARBOR_CRATE_O_LINKS)
 
@@ -25,7 +25,7 @@ mode.o:
 	$(CC) $(CCFLAGS) -c $(SOURCE_DIR)/modes/mode.cpp -o $(BUILD_DIR)/mode.o
 
 create_mode.o: mode.o pretty_print.o
-	$(CC) $(CCFLAGS) -c $(SOURCE_DIR)/modes/create_mode.cpp -o $(BUILD_DIR)/create_mode.o $(BUILD_DIR)/pretty_print.o
+	$(CC) $(CCFLAGS) -c $(SOURCE_DIR)/modes/create_mode.cpp -o $(BUILD_DIR)/create_mode.o 
 
 # -------------
 # PrettyPrint

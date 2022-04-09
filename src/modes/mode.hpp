@@ -22,7 +22,7 @@
              * @param arg argument string to parse
              * @return std::pair<std::string, std::string> 
              */
-            strstr_arg_pair parse_as_arg_pair(std::string arg);
+            static strstr_arg_pair * parse_as_arg_pair(std::string arg);
 
     };
 

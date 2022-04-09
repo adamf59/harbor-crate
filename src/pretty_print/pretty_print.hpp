@@ -17,6 +17,8 @@
          */
         void log(const char* message);
 
+        void log_warning(const char * message, const char * ...);
+
     }
 
 #endif
