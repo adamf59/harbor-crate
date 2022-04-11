@@ -4,7 +4,7 @@
     #include <vector>
     #include <string>
 
-    typedef std::pair<std::string, std::string> strstr_arg_pair;
+    typedef std::pair<std::string, std::string> strstr_pair;
 
     class Mode {
 
@@ -22,7 +22,7 @@
              * @param arg argument string to parse
              * @return std::pair<std::string, std::string> 
              */
-            static strstr_arg_pair * parse_as_arg_pair(std::string arg);
+            static strstr_pair * parse_as_arg_pair(std::string arg);
 
     };
 

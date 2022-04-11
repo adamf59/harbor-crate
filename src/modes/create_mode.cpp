@@ -2,6 +2,7 @@
 #include "create_mode.hpp"
 #include "../pretty_print/pretty_print.hpp"
 #include "../hbr_crate.hpp"
+#include "../crate_factory.hpp"
 
 // define optional arguments for create mode
 #define MOUNT_ARG "mount"
@@ -23,7 +24,7 @@ int Create_Mode::process(std::vector<std::string> args) {
         } else {
 
             // parse the arguments into a string,string pair
-            strstr_arg_pair * arg_pair = Mode::parse_as_arg_pair(args.at(argno));
+            strstr_pair * arg_pair = Mode::parse_as_arg_pair(args.at(argno));
 
             // argument name is the first value in the pair
             std::string arg_name = arg_pair->first;
@@ -60,6 +61,9 @@ int Create_Mode::process(std::vector<std::string> args) {
     }
 
     } 
+
+    // after argument parsing, call create_crate given arg-built spec 
+    create_crate(this);
 
     return HBRC_EXIT_CODE_UNKNOWN;
 }

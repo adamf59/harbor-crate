@@ -9,7 +9,21 @@
 
         public:
             int process(std::vector<std::string> args);
+            /**
+             * @brief get the dock location
+             * 
+             * @return std::string 
+             */
+            std::string * get_dock() {
+                return this->_dock;
+            }
+
         private:
+            /**
+             * @brief pointer to std::string with absolute dock path to store this crate in. NULL to use default.
+             * 
+             */
+            std::string * _dock = NULL;
             /**
              * @brief crate containerized OS flavor
              * 

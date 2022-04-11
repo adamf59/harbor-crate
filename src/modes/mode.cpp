@@ -1,6 +1,6 @@
 #include "mode.hpp"
 
-strstr_arg_pair * Mode::parse_as_arg_pair(std::string arg) {
+strstr_pair * Mode::parse_as_arg_pair(std::string arg) {
     
     // find the equals sign to split the argument at
     size_t split_at = arg.find('=');
@@ -11,5 +11,5 @@ strstr_arg_pair * Mode::parse_as_arg_pair(std::string arg) {
         return NULL;
     }
     // return the pair of strings on either side of the equals sign
-    return new strstr_arg_pair (arg.substr(0, split_at), arg.substr(split_at + 1));
+    return new strstr_pair (arg.substr(0, split_at), arg.substr(split_at + 1));
 }
