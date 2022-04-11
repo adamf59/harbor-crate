@@ -11,33 +11,37 @@
 #include <pwd.h>
 #include <time.h>
 
+#ifdef __x86_64 
+    #define DEFAULT_FLAVOR_PULL_URL "https://dl-cdn.alpinelinux.org/alpine/v3.15/releases/x86_64/alpine-minirootfs-3.15.4-x86_64.tar.gz"
+#elif __arm__
+    #define DEFAULT_FLAVOR_PULL_URL "https://dl-cdn.alpinelinux.org/alpine/v3.15/releases/armv7/alpine-minirootfs-3.15.4-armv7.tar.gz"
+#endif
+
 crate_id_t * create_crate(Create_Mode * cm_spec) {
 
     // check that the target dock exists (or create it)
-    if (!validate_dock(cm_spec->get_dock())) {
+    if (validate_dock(cm_spec->get_dock()) == NULL) {
 
         // create a new dock
         create_dock(cm_spec->get_dock());
     } else {
         PrettyPrint::log("using existing dock");
     }
-
-    // change directory to the dock
-    std::string rpath = expand_dock_to_realpath(cm_spec->get_dock());
     
-    if (chdir(rpath.c_str()) == -1) {
-        // error switching directories to dock
-        PrettyPrint::log_error("chdir: %s", true, strerror(errno));
-        exit(HBRC_EXIT_CODE_UNKNOWN);
-    }
+    // change directory to the dock
+    enter_dock(cm_spec->get_dock());
 
     // assign a unique crate id
     std::string * crate_id = generate_crate_id();
 
-    if (mkdir(crate_id->c_str(), 220) == -1) {
-        PrettyPrint::log_error("creating crate directory: %s", true, strerror(errno));
+    // create and enter the crate directory
+    if (mkdir(crate_id->c_str(), 220) == -1 || chdir(crate_id->c_str()) == -1) {
+        PrettyPrint::log_error("creating or entering crate directory: %s", true, strerror(errno));
         exit(HBRC_EXIT_CODE_UNKNOWN);
     }
+
+    // create and pull the crate file system
+    pull_container_fs(NULL);
     
     PrettyPrint::log("successfully built %s", crate_id->c_str());
 }
@@ -58,20 +62,72 @@ void create_dock(std::string * path) {
         exit(HBRC_EXIT_CODE_EACCES);
     }
 
+}
+
+void crate_execute(std::string * dock_path, crate_id_t crate_id, std::string path, bool detached) {
+
+    // change directory to the dock
+    enter_dock(dock_path);
+    // change directory to the crate
+    enter_crate(crate_id);
 
 }
 
-bool validate_dock(std::string * path) {
+void enter_crate(crate_id_t crate_id) {
+
+    // ensure the crate exists
+    if (access(crate_id.c_str(), F_OK) == -1) {
+        // unable to access crate, so error out
+        PrettyPrint::log_error("crate does not exist or insufficient permissions to access", true);
+        exit(HBRC_EXIT_CODE_UNKNOWN);
+    }
+
+    // crate exists, so change directory into it
+    if (chdir(crate_id.c_str()) == -1) {
+        PrettyPrint::log_error("when changing directory into crate: %s", true, strerror(errno));
+        exit(HBRC_EXIT_CODE_UNKNOWN);
+    }
+
+}
+
+void enter_dock(std::string * dock_path) {
+
+    std::string * dock_res = validate_dock(dock_path);
+
+    // validate the dock is set up and exists
+    if (dock_res != NULL) {
+
+        // change directory into the dock
+        if (chdir(dock_res->c_str()) == -1) {
+
+            PrettyPrint::log_error("entering dock path: %s", true, strerror(errno));
+            exit(HBRC_EXIT_CODE_UNKNOWN);
+
+        }
+        
+        // successfully changed directory into dock
+        return;
+
+    } else {
+
+        PrettyPrint::log_error("validating dock path: %s", true, strerror(errno));
+        exit(HBRC_EXIT_CODE_UNKNOWN);
+
+    }
+
+} 
+
+std::string * validate_dock(std::string * path) {
 
     // expand to a realpath
     std::string rpath = expand_dock_to_realpath(path);
 
     // ensure the path exists and is accessable
     if (access(rpath.c_str(), F_OK) == -1) {
-        return false;
+        return NULL;
     }
 
-    return true;
+    return new std::string(rpath);;
 }
 
 std::string expand_dock_to_realpath(std::string * path) {
@@ -110,4 +166,48 @@ std::string * generate_crate_id() {
     }
 
     return new std::string(id);
+}
+
+
+void pull_container_fs(const char * url) {
+    
+    // create file system (fs) directory
+    if (mkdir("fs", 220) == -1 || chdir("fs") == -1) {
+        // give error and exit
+        
+        PrettyPrint::log_error("creating or entering crate fs directory: %s", true, strerror(errno));
+        exit(HBRC_EXIT_CODE_UNKNOWN);
+
+    }
+
+    std::string pull_url;
+
+    if (url == NULL) {
+        // use default flavor defined at compile time
+        pull_url = std::string (DEFAULT_FLAVOR_PULL_URL);
+    } else {
+        pull_url = url;
+    }
+
+    // setup call to wget, save tar as `pack`
+    std::string sys_wget_command("wget --output-document=pack ");
+    sys_wget_command.append(pull_url);
+
+    // perform wget
+    system(sys_wget_command.c_str());
+
+    // ... unpack tar into fs directory
+    system("tar -xzf pack");
+
+    // remove pack
+    system("rm pack");
+
+    // move back out of the file system directory
+    if (chdir("../") == -1) {
+
+        PrettyPrint::log_error("leaving fs directory: %s", true, strerror(errno));
+        exit(HBRC_EXIT_CODE_UNKNOWN);
+
+    }
+
 }
