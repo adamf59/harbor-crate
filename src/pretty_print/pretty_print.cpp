@@ -26,7 +26,7 @@ void PrettyPrint::log_error(const char* message, bool fatal, ...) {
     }
 
     // initialize the variadic args list
-    va_start(va_args_list, message);
+    va_start(va_args_list, fatal);
 
     // print args using vprintf
     vprintf(message, va_args_list);

@@ -1,6 +1,7 @@
 #include "crate_factory.hpp"
 #include "pretty_print/pretty_print.hpp"
 #include "hbr_crate.hpp"
+#include "crate_ctrl.hpp"
 
 #include <string.h>
 #include <stdlib.h>
@@ -44,6 +45,9 @@ crate_id_t * create_crate(Create_Mode * cm_spec) {
     pull_container_fs(NULL);
     
     PrettyPrint::log("successfully built %s", crate_id->c_str());
+
+    // return the crate ID
+    return crate_id;
 }
 
 void create_dock(std::string * path) {
@@ -64,13 +68,27 @@ void create_dock(std::string * path) {
 
 }
 
-void crate_execute(std::string * dock_path, crate_id_t crate_id, std::string path, bool detached) {
+int crate_execute(Execute_Mode * em_spec) {
+
+    std::string crate_id = *em_spec->get_crate_id();
 
     // change directory to the dock
-    enter_dock(dock_path);
+    enter_dock(em_spec->get_dock_path());
     // change directory to the crate
     enter_crate(crate_id);
 
+    // get the executable
+    const char * executable = em_spec->get_executable().c_str();
+    // TODO: handle arguments passed to crate execute executable, i.e. "harbor-crate execute crate_id "ls -la""
+    char* exec_argv[] = {(char*) executable, NULL};
+
+    // print to user
+    PrettyPrint::log("attaching process '%s' to %s", executable, crate_id.c_str());
+
+    // run command inside containerized environment
+    crate_proc_run(executable, exec_argv);
+
+    return 0; // temporary
 }
 
 void enter_crate(crate_id_t crate_id) {

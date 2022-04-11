@@ -4,6 +4,7 @@
 #include "hbr_crate.hpp"
 #include "pretty_print/pretty_print.hpp"
 #include "modes/create_mode.hpp"
+#include "modes/execute_mode.hpp"
 
 // harbor crate entry point
 int main(int argc, const char** argv) {
@@ -53,7 +54,9 @@ int handle_harbor_arguments(std::vector<std::string> args) {
     } else if (command_mode == HBRC_MODE_EXECUTE) {
         // execute command mode
 
-        return 0; // temporary
+        Execute_Mode mode;
+
+        return mode.process(args); // temporary
 
     } else {
         // unrecognized command mode

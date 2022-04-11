@@ -14,7 +14,10 @@
     #define HBRC_EXIT_CODE_BADMODE 1 // invalid mode specified to a command handler
     #define HBRC_EXIT_CODE_BADARGS 2 // insufficient or invalid arguments provided to harbor_arguments handler
     #define HBRC_EXIT_CODE_EACCES  3 // permissions error occurred 
+    #define HBRC_EXIT_CODE_FORKERR 4 // error when forking process to command run inside a crate
     #define HBRC_EXIT_CODE_UNKNOWN 99 // an unknown or generic error occured, no further information.
+
+    typedef std::string crate_id_t;
 
     /**
      * @brief Process harbor commands in the form of a vector of arguments 

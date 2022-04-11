@@ -17,19 +17,25 @@ all: harbor_crate
 # -------------
 
 # application executable (harbor-crate)
-HARBOR_CRATE_O_LINKS = $(BUILD_DIR)/pretty_print.o $(BUILD_DIR)/create_mode.o $(BUILD_DIR)/mode.o $(BUILD_DIR)/crate_factory.o
-harbor_crate: pretty_print.o create_mode.o
+HARBOR_CRATE_O_LINKS = $(BUILD_DIR)/pretty_print.o $(BUILD_DIR)/mode.o $(BUILD_DIR)/create_mode.o $(BUILD_DIR)/execute_mode.o $(BUILD_DIR)/crate_factory.o $(BUILD_DIR)/crate_ctrl.o
+
+harbor_crate: pretty_print.o create_mode.o execute_mode.o crate_factory.o crate_ctrl.o
 	$(CC) $(CCFLAGS) $(SOURCE_DIR)/hbr_crate.cpp -o $(BUILD_DIR)/harbor-crate $(HARBOR_CRATE_O_LINKS)
 
 mode.o:
 	$(CC) $(CCFLAGS) -c $(SOURCE_DIR)/modes/mode.cpp -o $(BUILD_DIR)/mode.o
 
-CREATE_MODE_O_LINKS = $(BUILD_DIR)/crate_factory.o
-create_mode.o: mode.o pretty_print.o crate_factory.o
-	$(CC) $(CCFLAGS) -c $(SOURCE_DIR)/modes/create_mode.cpp -o $(BUILD_DIR)/create_mode.o $(CREATE_MODE_O_LINKS)
+create_mode.o: mode.o pretty_print.o
+	$(CC) $(CCFLAGS) -c $(SOURCE_DIR)/modes/create_mode.cpp -o $(BUILD_DIR)/create_mode.o 
 
-crate_factory.o: pretty_print.o
+execute_mode.o: mode.o pretty_print.o
+	$(CC) $(CCFLAGS) -c $(SOURCE_DIR)/modes/execute_mode.cpp -o $(BUILD_DIR)/execute_mode.o
+
+crate_factory.o: pretty_print.o execute_mode.o create_mode.o
 	$(CC) $(CCFLAGS) -c $(SOURCE_DIR)/crate_factory.cpp -o $(BUILD_DIR)/crate_factory.o
+
+crate_ctrl.o: pretty_print.o
+	$(CC) $(CCFLAGS) -c $(SOURCE_DIR)/crate_ctrl.cpp -o $(BUILD_DIR)/crate_ctrl.o
 
 # -------------
 # PrettyPrint

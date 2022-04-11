@@ -3,8 +3,8 @@
     
     #include <string>
     #include "modes/create_mode.hpp"
-
-    typedef std::string crate_id_t;
+    #include "modes/execute_mode.hpp"
+    #include "hbr_crate.hpp"
 
     /**
      * @brief create a new crate 
@@ -33,8 +33,9 @@
      * @param id id of crate
      * @param path path to executable inside crate
      * @param detached whether to run the process as a daemon or attached to this tty
+     * @return exit code of exec call within crate
      */
-    void crate_execute(std::string * dock_path, crate_id_t crate_id, std::string path, bool detached);
+    int crate_execute(Execute_Mode * em_spec);
 
     /**
      * @brief changes directory into the specified dock (or the default if dock_path is NULL) 
