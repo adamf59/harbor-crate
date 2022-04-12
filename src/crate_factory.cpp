@@ -12,6 +12,8 @@
 #include <pwd.h>
 #include <time.h>
 
+
+
 #ifdef __x86_64 
     #define DEFAULT_FLAVOR_PULL_URL "https://dl-cdn.alpinelinux.org/alpine/v3.15/releases/x86_64/alpine-minirootfs-3.15.4-x86_64.tar.gz"
 #elif __arm__
@@ -97,6 +99,7 @@ void enter_crate(crate_id_t crate_id) {
     if (access(crate_id.c_str(), F_OK) == -1) {
         // unable to access crate, so error out
         PrettyPrint::log_error("crate does not exist or insufficient permissions to access", true);
+        perror("access");
         exit(HBRC_EXIT_CODE_UNKNOWN);
     }
 
