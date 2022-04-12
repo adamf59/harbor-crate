@@ -3,6 +3,8 @@
 #include <iostream>
 #include "hbr_crate.hpp"
 #include "pretty_print/pretty_print.hpp"
+#include "modes/create_mode.hpp"
+#include "modes/execute_mode.hpp"
 
 // harbor crate entry point
 int main(int argc, const char** argv) {
@@ -40,11 +42,21 @@ int handle_harbor_arguments(std::vector<std::string> args) {
     if (command_mode == HBRC_MODE_CREATE) {
         // create command mode
 
+        Create_Mode mode;
+
+        return mode.process(args); // temporary
+
     } else if (command_mode == HBRC_MODE_DELETE) {
         // delete command mode
 
+        return 0; // temporary
+
     } else if (command_mode == HBRC_MODE_EXECUTE) {
         // execute command mode
+
+        Execute_Mode mode;
+
+        return mode.process(args); // temporary
 
     } else {
         // unrecognized command mode
